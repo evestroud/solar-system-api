@@ -33,3 +33,10 @@ def get_planets_info():
             "orbital_period": planet.orbital_period,
         })
     return jsonify(planets_info)
+
+@planets_bp.route("/<planet_id>", methods = ["GET"])
+def get_single_planet(planet_id):
+    for planet in planets:
+        if planet.id == planet_id:
+            return vars(planet)
+            

@@ -14,6 +14,7 @@ Talk through each section with your partner. Add notes on what you discussed and
 ## Preferred Feedback Style
 *How does each team member best receive feedback?*
 
+
 ## One Team Communication Skill to Improve
 *What is a teamwork-related skill you want to work on?*
 
