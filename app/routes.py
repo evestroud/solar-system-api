@@ -36,7 +36,11 @@ def get_planets_info():
 
 @planets_bp.route("/<planet_id>", methods = ["GET"])
 def get_single_planet(planet_id):
+    try:
+        planet_id = int(planet_id)
+    except:
+        return {"message": f"{planet_id} is invalid"}, 400
     for planet in planets:
         if planet.id == planet_id:
             return vars(planet)
-            
+    return {"message": f"planet not found: {planet_id}"}, 404
