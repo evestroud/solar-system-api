@@ -1,12 +1,14 @@
 from flask import Blueprint, jsonify
+from app import db
+from .models import planet
 
-class Planet:
+# class Planet:
 
-    def __init__(self, id, name, description, orbital_period):
-        self.id = id
-        self.name = name
-        self.description = description 
-        self.orbital_period = orbital_period 
+#     def __init__(self, id, name, description, orbital_period):
+#         self.id = id
+#         self.name = name
+#         self.description = description 
+#         self.orbital_period = orbital_period 
 
 
 planets = [
