@@ -16,44 +16,48 @@ from .models.planet import Planet
 
 planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 
-@planets_bp.route("", methods=["GET", "POST"])
+@planets_bp.route("", methods=["GET"])
 def handle_planets():
-    if request.method == "GET":
-        queries = request.args.to_dict()
-        query_list = []
+    queries = request.args.to_dict()
+    query_list = []
 
-        for param in queries:
-            if param == "id":
-                query_list.append(Planet.id.contains(queries[param]))
-            elif param == "name":
-                query_list.append(Planet.name.contains(queries[param]))
-            elif param == "description":
-                query_list.append(Planet.description.contains(queries[param]))
-            elif param == "orbital_period":
-                query_list.append(Planet.orbital_period.contains(queries[param]))
-                
+    for param in queries:
+        if param == "id":
+            query_list.append(Planet.id.contains(queries[param]))
+        elif param == "name":
+            query_list.append(Planet.name.contains(queries[param]))
+        elif param == "description":
+            query_list.append(Planet.description.contains(queries[param]))
+        elif param == "orbital_period":
+            query_list.append(Planet.orbital_period.contains(queries[param]))
+            
 
-        planets = Planet.query.filter_by(**queries)
-        planet_response = []
-        for planet in planets:
-            planet_response.append({
-                "id": planet.id,
-                "name": planet.name,
-                "description": planet.description,
-                "orbital_period": planet.orbital_period,
-            })
-        return jsonify(planet_response)
+    planets = Planet.query.filter_by(**queries)
+    planet_response = []
+    for planet in planets:
+        planet_response.append({
+            "id": planet.id,
+            "name": planet.name,
+            "description": planet.description,
+            "orbital_period": planet.orbital_period,
+        })
+    return jsonify(planet_response)
 
-    elif request.method == "POST":
-        request_body = request.get_json()
-        new_planet = Planet(name=request_body["name"],
-                            description = request_body["description"],
-                            orbital_period=request_body["orbital_period"])
     
-        db.session.add(new_planet)
-        db.session.commit()
+@planets_bp.route("", methods=["POST"])
+def create_planet():
+
+    request_body = request.get_json()
+    new_planet = Planet(name=request_body["name"],
+                        description = request_body["description"],
+                        orbital_period=request_body["orbital_period"])
     
-        return make_response(f"Planet {new_planet.name} successfully created")
+    db.session.add(new_planet)
+    db.session.commit()
+    
+    return make_response(f"Planet {new_planet.name} successfully created")
+
+
 
 #Validate planet - return response message if planet not found or invalid
 def validate_planet(planet_id):
