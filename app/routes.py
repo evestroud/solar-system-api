@@ -19,7 +19,21 @@ planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 @planets_bp.route("", methods=["GET", "POST"])
 def handle_planets():
     if request.method == "GET":
-        planets = Planet.query.all()
+        queries = request.args.to_dict()
+        query_list = []
+
+        for param in queries:
+            if param == "id":
+                query_list.append(Planet.id.contains(queries[param]))
+            elif param == "name":
+                query_list.append(Planet.name.contains(queries[param]))
+            elif param == "description":
+                query_list.append(Planet.description.contains(queries[param]))
+            elif param == "orbital_period":
+                query_list.append(Planet.orbital_period.contains(queries[param]))
+                
+
+        planets = Planet.query.filter_by(**queries)
         planet_response = []
         for planet in planets:
             planet_response.append({
