@@ -55,7 +55,7 @@ def create_planet():
     db.session.add(new_planet)
     db.session.commit()
     
-    return make_response(f"Planet {new_planet.name} successfully created")
+    return make_response(jsonify(f"Planet {new_planet.name} successfully created"), 201)
 
 
 
@@ -76,7 +76,7 @@ def validate_planet(planet_id):
 #Get single planets info
 @planets_bp.route("/<planet_id>", methods = ["GET"])
 def handle_planet(planet_id):
-   #planet = Planet.query.get(planet_id)
+   
     planet = validate_planet(planet_id)
 
     if request.method == "GET":
@@ -100,7 +100,7 @@ def update_planet(planet_id):
 
     db.session.commit()
 
-    return make_response(f"Planet #{planet.id} successfully updated")
+    return make_response(jsonify(f"Planet #{planet.id} successfully updated"))
 
 #Delete a planet
 @planets_bp.route("/<planet_id>", methods=["DELETE"])
