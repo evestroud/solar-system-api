@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, make_response, request, abort
 from app import db
 from .models.planet import Planet
+from app.models.moon import Moon
 
 # planets = [
 #     Planet(1, "Mercury", "The smallest planet in the solar system", 88),
@@ -58,7 +59,6 @@ def create_planet():
     return make_response(jsonify(f"Planet {new_planet.name} successfully created"), 201)
 
 
-
 #Validate planet - return response message if planet not found or invalid
 def validate_planet(planet_id):
     try:
@@ -112,13 +112,70 @@ def delete_planet(planet_id):
 
     return make_response(f"Planet #{planet.id} successfully deleted")
 
+#Blueprint for moon
+moons_bp = Blueprint("moons_bp", __name__, url_prefix="/moons")
+
+#Create a new moon 
+@moons_bp.route("", methods=["POST"])
+def create_moon():
+    request_body = request.get_json()
+    new_moon = Moon(name=request_body["name"],)
+
+    db.session.add(new_moon)
+    db.session.commit()
+
+    return make_response(jsonify(f"Moon {new_moon.name} successfully created"), 201)
+
+#Get all of the moons
+@moons_bp.route("", methods=["GET"])
+def handle_all_moons():
+    
+    moons = Moon.query.all()
+
+    moons_response = []
+    for moon in moons:
+       moons_response.append(
+            {
+                "name": moon.name,
+                "description": description.name
+            }
+        )
+    return jsonify(moons_response)
+
+@moons_bp.route("/<moon_id>/planets", methods=["POST"])
+def create_planet(moon_id):
+
+    moon = validate_planet(Moon, moon_id)
+
+    request_body = request.get_json()
+    new_planet = Planet(
+        name=request_body["name"],
+        description=request_body["description"],
+        orbital_period = request_body["orbital_period"],
+        moon = moon
+    )
+
+    db.session.add(new_planet)
+    db.session.commit()
+
+    return make_response(jsonify(f"Planet {new_planet.name} with {new_planet.moon.name} successfully created"), 201)
 
 
-#     try:
-#         planet_id = int(planet_id)
-#     except:
-#         return {"message": f"{planet_id} is invalid"}, 400
-#     for planet in planets:
-#         if planet.id == planet_id:
-#             return vars(planet)
-#     return {"message": f"planet not found: {planet_id}"}, 404
+
+@moons_bp.route("/<moon_id>/planets", methods=["GET"])
+def get_moons(moon_id):
+
+    moon = validate_planet(Moon, moon_id)
+
+    planets_response = []
+    for planet in moon.planets:
+        planets_response.append(
+            {
+            "id": planet.id,
+            "name": planet.name,
+            "description":planet.description,
+            "orbital_period": planet.orbital_period
+            }
+        )
+    return jsonify(planets_response)
+
